@@ -8,7 +8,7 @@
 
 import XCTest
 import Combine
-@testable import Networking
+@testable import AsyncLoad
 
 @available(OSX 10.15, *)
 final class LoadableTests: XCTestCase {
