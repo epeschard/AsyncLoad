@@ -27,7 +27,6 @@ public extension WebRepository {
             return session
                 .dataTaskPublisher(for: request)
                 .requestJSON(httpCodes: httpCodes)
-                .ensureTimeSpan(5) // Hold the response if it arrives too quickly
         } catch let error {
             return Fail<Value, Error>(error: error).eraseToAnyPublisher()
         }
