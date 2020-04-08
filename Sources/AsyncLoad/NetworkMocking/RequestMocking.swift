@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension URLSession {
+public extension URLSession {
     static var mockedResponsesOnly: URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.protocolClasses = [RequestMocking.self, RequestBlocking.self]
@@ -18,7 +18,7 @@ extension URLSession {
     }
 }
 
-extension RequestMocking {
+public extension RequestMocking {
     static private var mocks: [MockedResponse] = []
 
     static func add(mock: MockedResponse) {
@@ -36,7 +36,7 @@ extension RequestMocking {
 
 // MARK: - RequestMocking
 
-final class RequestMocking: URLProtocol {
+final public class RequestMocking: URLProtocol {
 
     override class func canInit(with request: URLRequest) -> Bool {
         return mock(for: request) != nil

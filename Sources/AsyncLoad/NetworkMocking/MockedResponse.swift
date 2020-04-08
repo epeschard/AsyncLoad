@@ -7,9 +7,8 @@
 //
 
 import Foundation
-@testable import AsyncLoad
 
-extension RequestMocking {
+public extension RequestMocking {
     struct MockedResponse {
         let url: URL
         let result: Result<Data, Swift.Error>
@@ -20,7 +19,7 @@ extension RequestMocking {
     }
 }
 
-extension RequestMocking.MockedResponse {
+public extension RequestMocking.MockedResponse {
     enum Error: Swift.Error {
         case failedMockCreation
     }
