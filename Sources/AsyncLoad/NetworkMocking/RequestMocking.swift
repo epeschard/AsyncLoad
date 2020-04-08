@@ -38,21 +38,21 @@ public extension RequestMocking {
 
 final public class RequestMocking: URLProtocol {
 
-    override class func canInit(with request: URLRequest) -> Bool {
+    override public class func canInit(with request: URLRequest) -> Bool {
         return mock(for: request) != nil
     }
 
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+    override public class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
 
     // swiftlint:disable identifier_name
-    override class func requestIsCacheEquivalent(_ a: URLRequest, to b: URLRequest) -> Bool {
+    override public class func requestIsCacheEquivalent(_ a: URLRequest, to b: URLRequest) -> Bool {
     // swiftlint:enable identifier_name
         return false
     }
 
-    override func startLoading() {
+    override public func startLoading() {
         if let mock = RequestMocking.mock(for: request),
             let url = request.url,
             let response = mock.customResponse ??
@@ -76,7 +76,7 @@ final public class RequestMocking: URLProtocol {
         }
     }
 
-    override func stopLoading() { }
+    override public func stopLoading() { }
 }
 
 // MARK: - RequestBlocking
