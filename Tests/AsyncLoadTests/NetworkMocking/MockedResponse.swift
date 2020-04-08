@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@testable import CountriesSwiftUI
+@testable import AsyncLoad
 
 extension RequestMocking {
     struct MockedResponse {
@@ -25,7 +25,7 @@ extension RequestMocking.MockedResponse {
         case failedMockCreation
     }
 
-    init<T>(apiCall: APICall, baseURL: String,
+    init<T>(apiCall: API, baseURL: String,
             result: Result<T, Swift.Error>,
             httpCode: HTTPCode = 200,
             headers: [String: String] = ["Content-Type": "application/json"],
@@ -46,7 +46,7 @@ extension RequestMocking.MockedResponse {
         customResponse = nil
     }
 
-    init(apiCall: APICall, baseURL: String, customResponse: URLResponse) throws {
+    init(apiCall: API, baseURL: String, customResponse: URLResponse) throws {
         guard let url = try apiCall.urlRequest(baseURL: baseURL).url
             else { throw Error.failedMockCreation }
         self.url = url
