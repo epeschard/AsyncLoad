@@ -55,7 +55,10 @@ public typealias HTTPCodes = Range<HTTPCode>
 
 public extension HTTPCodes {
     static let success = 200 ..< 300
+    static let badRequest = 400
     static let unauthorized = 401
+    static let notFound = 404
+    static let internalServerError = 500
 }
 
 public enum HTTPMethod: String {
