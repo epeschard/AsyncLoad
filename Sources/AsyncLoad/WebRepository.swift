@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import os
 
 public protocol WebRepository {
     var session: URLSession { get }
@@ -24,6 +25,7 @@ public extension WebRepository {
         do {
             let request = try endpoint.urlRequest(baseURL: baseURL,
                                                   with: token)
+            os_log(.info, "urlRequest: %{PUBlIC}@", request)
             return session
                 .dataTaskPublisher(for: request)
                 .requestJSON(httpCodes: httpCodes)
@@ -41,9 +43,11 @@ private extension Publisher where Output == URLSession.DataTaskPublisher.Output 
         return tryMap {
                 assert(!Thread.isMainThread)
                 guard let code = ($0.1 as? HTTPURLResponse)?.statusCode else {
+                    os_log(.error, "unrecognized HTTP response: %@", $0.1)
                     throw APIError.unexpectedResponse
                 }
                 guard httpCodes.contains(code) else {
+                    os_log(.error, "unknown HTTP status code: %d", code)
                     throw APIError.httpCode(code)
                 }
                 return $0.0
