@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import os
 
 @available(OSX 10.15, iOS 13, *)
 public extension Publisher {
@@ -16,6 +17,7 @@ public extension Publisher {
         return sink(receiveCompletion: { completion in
             switch completion {
             case let .failure(error):
+                os_log(.error, "sinkToResult failed: %{PUBLIC}@", error.localizedDescription)
                 result(.failure(error))
             default: break
             }
@@ -27,6 +29,7 @@ public extension Publisher {
     func sinkToLoadable(_ completion: @escaping (Loadable<Output>) -> Void) -> AnyCancellable {
         return sink(receiveCompletion: { subscriptionCompletion in
             if let error = subscriptionCompletion.error {
+                os_log(.error, "sinkToLoadable failed: %{PUBLIC}@", error.localizedDescription)
                 completion(.failed(error))
             }
         }, receiveValue: { value in
