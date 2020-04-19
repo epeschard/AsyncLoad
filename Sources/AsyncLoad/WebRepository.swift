@@ -25,7 +25,7 @@ public extension WebRepository {
         do {
             let request = try endpoint.urlRequest(baseURL: baseURL,
                                                   with: token)
-            os_log(.info, "urlRequest: %{PUBlIC}@", request)
+            os_log(.info, "urlRequest: %{PUBLIC}@", request.description)
             return session
                 .dataTaskPublisher(for: request)
                 .requestJSON(httpCodes: httpCodes)
