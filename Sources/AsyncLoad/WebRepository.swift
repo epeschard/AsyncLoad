@@ -39,7 +39,7 @@ public extension WebRepository {
 
 @available(OSX 10.15, iOS 13, *)
 private extension Publisher where Output == URLSession.DataTaskPublisher.Output {
-    func requestJSON<Value>(httpCodes: HTTPCodes) -> AnyPublisher<Value, Error> where Value: Decodable {
+    func requestJSON<Value>(httpCodes: HTTPCodes, with jsonDecoder: JSONDecoder = JSONDecoder()) -> AnyPublisher<Value, Error> where Value: Decodable {
         return tryMap {
                 assert(!Thread.isMainThread)
                 guard let code = ($0.1 as? HTTPURLResponse)?.statusCode else {
@@ -53,7 +53,7 @@ private extension Publisher where Output == URLSession.DataTaskPublisher.Output 
                 return $0.0
             }
             .extractUnderlyingError()
-            .decode(type: Value.self, decoder: JSONDecoder())
+            .decode(type: Value.self, decoder: jsonDecoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
