@@ -20,7 +20,6 @@ public protocol WebRepository {
 public extension WebRepository {
     func call<Value>(_ endpoint: API,
                      with token: String? = nil,
-                     using jsonDecoder: JSONDecoder = JSONDecoder()
                      httpCodes: HTTPCodes = .success) -> AnyPublisher<Value, Error>
         where Value: Decodable {
         do {
@@ -29,7 +28,7 @@ public extension WebRepository {
             os_log(.info, "urlRequest: %{PUBLIC}@", request.description)
             return session
                 .dataTaskPublisher(for: request)
-                .requestJSON(httpCodes: httpCodes, using: jsonDecoder)
+                .requestJSON(httpCodes: httpCodes)
         } catch let error {
             return Fail<Value, Error>(error: error).eraseToAnyPublisher()
         }
@@ -40,7 +39,9 @@ public extension WebRepository {
 
 @available(OSX 10.15, iOS 13, *)
 private extension Publisher where Output == URLSession.DataTaskPublisher.Output {
-    func requestJSON<Value>(httpCodes: HTTPCodes, using jsonDecoder: JSONDecoder = JSONDecoder()) -> AnyPublisher<Value, Error> where Value: Decodable {
+    func requestJSON<Value>(httpCodes: HTTPCodes) -> AnyPublisher<Value, Error> where Value: Decodable {
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.dataDecodingStrategy = .iso8601
         return tryMap {
                 assert(!Thread.isMainThread)
                 guard let code = ($0.1 as? HTTPURLResponse)?.statusCode else {
