@@ -33,7 +33,8 @@ extension APIError: LocalizedError {
 
 public extension API {
     func urlRequest(baseURL: String,
-                    with token: String? = nil)
+                    with token: String? = nil,
+                    and cacheTTL: Int? = nil)
         throws -> URLRequest {
         guard let url = URL(string: baseURL + path) else {
             throw APIError.invalidURL
@@ -45,6 +46,9 @@ public extension API {
                          forHTTPHeaderField: "Content-Type")
         if let key = token {
             request.setValue("token \(key)", forHTTPHeaderField: "Authorization")
+        }
+        if let ttl = cacheTTL {
+            request.setValue("max-age=\(ttl)", forHTTPHeaderField: "Cache-Control")
         }
         return request
     }
