@@ -9,8 +9,10 @@
 import Foundation
 
 public protocol API {
+    var version: String { get }
     var path: String { get }
     var method: HTTPMethod { get }
+    var queryItems: [URLQueryItem]? { get }
     var headers: [String: String]? { get }
     func body() throws -> Data?
 }
@@ -32,19 +34,32 @@ extension APIError: LocalizedError {
 }
 
 public extension API {
-    func urlRequest(baseURL: String,
-                    with token: String? = nil,
-                    and cacheTTL: Int? = nil)
-        throws -> URLRequest {
-        guard let url = URL(string: baseURL + path) else {
+    func url(for host: String) throws -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = host
+        components.path = path
+        components.queryItems = queryItems
+
+        guard let url = components.url else {
             throw APIError.invalidURL
         }
+
+        return url
+    }
+
+    func urlRequest(for host: String, with token: String?, and cacheTTL: Int? = nil) throws -> URLRequest {
+        let requestUrl = try url(for: host)
+        return try urlRequest(from: requestUrl, with: token, and: cacheTTL)
+    }
+
+    func urlRequest(from url: URL, with token: String? = nil, and cacheTTL: Int? = nil) throws -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = try body()
         request.setValue("application/json; charset=utf-8",
                          forHTTPHeaderField: "Content-Type")
-        if let key = token {
+        if let key = token, key != "" {
             request.setValue("token \(key)", forHTTPHeaderField: "Authorization")
         }
         if let ttl = cacheTTL {

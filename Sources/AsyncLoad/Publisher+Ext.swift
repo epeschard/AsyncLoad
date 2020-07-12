@@ -13,6 +13,12 @@ import os
 @available(OSX 10.15, iOS 13, *)
 public extension Publisher {
 
+//    enum FailureReason: Error {
+//        case sessionFailed(error: URLError)
+//        case decodingFailed
+//        case other(Error)
+//    }
+
     func sinkToResult(_ result: @escaping (Result<Output, Failure>) -> Void) -> AnyCancellable {
         return sink(receiveCompletion: { completion in
             switch completion {
@@ -29,6 +35,14 @@ public extension Publisher {
     func sinkToLoadable(_ completion: @escaping (Loadable<Output>) -> Void) -> AnyCancellable {
         return sink(receiveCompletion: { subscriptionCompletion in
             if let error = subscriptionCompletion.error {
+//                switch error {
+//                case is Swift.DecodingError:
+//                    return .decodingFailed
+//                case let urlError as URLError:
+//                    return .sessionFailed(error: urlError)
+//                default:
+//                    return .other(error)
+//                }
                 os_log(.error, "sinkToLoadable failed: %{PUBLIC}@", error.localizedDescription)
                 completion(.failed(error))
             }

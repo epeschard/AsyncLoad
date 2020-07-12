@@ -24,14 +24,13 @@ public extension RequestMocking.MockedResponse {
         case failedMockCreation
     }
 
-    init<T>(apiCall: API, baseURL: String,
+    init<T>(apiCall: API, host: String,
             result: Result<T, Swift.Error>,
             httpCode: HTTPCode = 200,
             headers: [String: String] = ["Content-Type": "application/json"],
             loadingTime: TimeInterval = 0.1
     ) throws where T: Encodable {
-        guard let url = try apiCall.urlRequest(baseURL: baseURL).url
-            else { throw Error.failedMockCreation }
+        let url = try apiCall.url(for: host)
         self.url = url
         switch result {
         case let .success(value):
@@ -45,9 +44,8 @@ public extension RequestMocking.MockedResponse {
         customResponse = nil
     }
 
-    init(apiCall: API, baseURL: String, customResponse: URLResponse) throws {
-        guard let url = try apiCall.urlRequest(baseURL: baseURL).url
-            else { throw Error.failedMockCreation }
+    init(apiCall: API, host: String, customResponse: URLResponse) throws {
+        let url = try apiCall.url(for: host)
         self.url = url
         result = .success(Data())
         httpCode = 200

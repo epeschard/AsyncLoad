@@ -1,5 +1,5 @@
 //
-//  TestWebRepository.swift
+//  WebRepositoryTests.swift
 //  AsyncLoad
 //
 //  Created by Alexey Naumov on 31.10.2019.
@@ -10,8 +10,8 @@ import XCTest
 import Combine
 @testable import AsyncLoad
 
-class TestWebRepository: WebRepository {
+class WebRepositoryTests: WebRepository {
     let session: URLSession = .mockedResponsesOnly
-    let baseURL = "https://test.com"
+    let host = "test.com"
     let bgQueue = DispatchQueue(label: "test")
 }

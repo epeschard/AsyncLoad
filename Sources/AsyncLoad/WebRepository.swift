@@ -11,20 +11,20 @@ import Combine
 import os
 
 public protocol WebRepository {
+    var host: String { get }
     var session: URLSession { get }
-    var baseURL: String { get }
     var bgQueue: DispatchQueue { get }
 }
 
 @available(OSX 10.15, iOS 13, *)
 public extension WebRepository {
     func call<Value>(_ endpoint: API,
-                     with token: String? = nil,
+                     with token: String?,
+                     cacheTTL: Int? = nil,
                      httpCodes: HTTPCodes = .success) -> AnyPublisher<Value, Error>
         where Value: Decodable {
         do {
-            let request = try endpoint.urlRequest(baseURL: baseURL,
-                                                  with: token)
+            let request = try endpoint.urlRequest(for: host, with: token, and: cacheTTL)
             os_log(.info, "urlRequest: %{PUBLIC}@", request.description)
             return session
                 .dataTaskPublisher(for: request)
@@ -41,6 +41,8 @@ public extension WebRepository {
 private extension Publisher where Output == URLSession.DataTaskPublisher.Output {
     func requestJSON<Value>(httpCodes: HTTPCodes) -> AnyPublisher<Value, Error> where Value: Decodable {
         let jsonDecoder = JSONDecoder()
+        jsonDecoder.dateDecodingStrategy = .iso8601
+        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
         jsonDecoder.dateDecodingStrategy = .iso8601
         return tryMap {
                 assert(!Thread.isMainThread)
